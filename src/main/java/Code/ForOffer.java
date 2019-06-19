@@ -4,135 +4,111 @@ import Data.*;
 
 import java.util.*;
 
-class LFUCache {
-
-    private HashMap<Integer, Integer> values;
-    private HashMap<Integer, Integer> counts;
-    private HashMap<Integer, LinkedHashSet<Integer>> lists;
-    private int capacity;
-    private int min = -1;
-
-    public LFUCache(int capacity) {
-        this.capacity = capacity;
-        values = new HashMap<>();
-        counts = new HashMap<>();
-        lists = new HashMap<>();
-        lists.put(1, new LinkedHashSet<>());
-    }
-
-    public int get(int key) {
-        if (!values.containsKey(key)) return -1;
-        int count = counts.get(key);
-        counts.put(key, count + 1);
-        lists.get(count).remove(key);
-        if (count == min && lists.get(count).size() == 0) ++min;
-        if (!lists.containsKey(count + 1)) {
-            lists.put(count + 1, new LinkedHashSet<>());
-        }
-        lists.get(count + 1).add(key);
-        return values.get(key);
-    }
-
-    public void put(int key, int value) {
-        if (capacity <= 0) return;
-        if (values.containsKey(key)) {
-            values.put(key, value);
-            get(key);
-            return;
-        }
-        if (values.size() >= capacity) {
-            int evit = lists.get(min).iterator().next();
-            lists.get(min).remove(evit);
-            values.remove(evit);
-        }
-        values.put(key, value);
-        counts.put(key, 1);
-        min = 1;
-        lists.get(1).add(key);
-    }
-}
-
-class LRUCache {
-
-    private class Node {
-        int key;
-        int value;
-        Node prev, next;
-
-        Node(int k, int v) {
-            this.key = k;
-            this.value = v;
-        }
-
-        Node() {
-            this(0, 0);
-        }
-    }
-
-    private int capacity, count;
-
-    private Node head, tail;
-
-    private Map<Integer, Node> map;
-
-    public LRUCache(int capacity) {
-        this.capacity = capacity;
-        count = 0;
-        map = new HashMap<>();
-        head = new Node();
-        tail = new Node();
-        head.next = tail;
-        tail.prev = head;
-    }
-
-    public int get(int key) {
-        Node node = map.get(key);
-        if (node == null) return -1;
-        update(node);
-        return node.value;
-    }
-
-    public void put(int key, int value) {
-        Node node = map.get(key);
-        if (node == null) {
-            node = new Node(key, value);
-            map.put(key, node);
-            add(node);
-            ++count;
-        } else {
-            node.value = value;
-            update(node);
-        }
-        if (count > capacity) {
-            Node del = tail.prev;
-            remove(del);
-            map.remove(del.key);
-            --count;
-        }
-    }
-
-    private void update(Node node) {
-        remove(node);
-        add(node);
-    }
-
-    private void remove(Node node) {
-        Node before = node.prev, after = node.next;
-        before.next = after;
-        after.prev = before;
-    }
-
-    private void add(Node node) {
-        Node after = head.next;
-        node.prev = head;
-        node.next = after;
-        head.next = node;
-        after.prev = node;
-    }
-}
-
 public class ForOffer {
 
+    public boolean isContinuous2(int[] numbers) {
+        if (numbers == null || numbers.length == 0) return false;
+        Arrays.sort(numbers);
+        int num = 0;
+        for (int i = 0; i < numbers.length; i++) {
+            if (numbers[i] == 0) {
+                ++num;
+            } else if (i > 0 && numbers[i - 1] != 0) {
+                int tmp = numbers[i] - numbers[i - 1] - 1;
+                if (tmp < 0) return false;
+                num -= tmp;
+            }
+        }
+        return num >= 0;
+    }
+
+    public String ReverseSentence2(String str) {
+        if (str.equals(" ")) return " ";
+        if (str == null || str.length() <= 1) return str;
+        StringBuilder res = new StringBuilder();
+        int i, j = 0;
+        boolean isWord = false;
+        for (i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            if (c == ' ') {
+                if (isWord) {
+                    res.insert(0, str.substring(j, i)).insert(0, ' ');
+                    isWord = false;
+                }
+            } else {
+                if (!isWord) {
+                    j = i;
+                    isWord = true;
+                }
+            }
+        }
+        if (isWord) {
+            res.insert(0, str.substring(j, i)).insert(0, ' ');
+        }
+        return res.length() == 0 ? "" : res.toString().substring(1);
+    }
+
+    public ArrayList<Integer> FindNumbersWithSum(int[] array, int sum) {
+        ArrayList<Integer> res = new ArrayList<>();
+        if (array.length < 2) return res;
+        int lo = 0, hi = array.length - 1, curr;
+        while (lo < hi) {
+            curr = array[lo] + array[hi];
+            if (curr == sum) {
+                res.add(array[lo]);
+                res.add(array[hi]);
+                break;
+            } else if (curr < sum) {
+                ++lo;
+            } else {
+                --hi;
+            }
+        }
+        return res;
+    }
+
+    public ArrayList<ArrayList<Integer>> FindContinuousSequence(int sum) {
+        ArrayList<ArrayList<Integer>> res = new ArrayList<>();
+        int lo = 1, hi = 2, curr;
+        while (lo < hi) {
+            curr = (lo + hi) * (hi - lo + 1) / 2;
+            if (curr == sum) {
+                ArrayList<Integer> list = new ArrayList<>();
+                for (int i = lo; i <= hi; i++) list.add(i);
+                res.add(list);
+                ++lo;
+            } else if (curr < sum) {
+                ++hi;
+            } else {
+                ++lo;
+            }
+        }
+        return res;
+    }
+
+    public ArrayList<ArrayList<Integer>> FindContinuousSequence2(int sum) {
+        ArrayList<ArrayList<Integer>> res = new ArrayList<>();
+        int lo = 1, hi = 2, mid = (1 + sum) / 2, num = lo + hi;
+        while (lo < mid) {
+            if (num == sum) {
+                ArrayList<Integer> list = new ArrayList<>();
+                for (int i = lo; i <= hi; i++) list.add(i);
+                res.add(list);
+            }
+            while (lo < mid && sum < num) {
+                num -= lo;
+                ++lo;
+                if (sum == num) {
+                    ArrayList<Integer> list = new ArrayList<>();
+                    for (int j = lo; j <= hi; ++j) list.add(j);
+                    res.add(list);
+                }
+            }
+            ++hi;
+            num += hi;
+        }
+        return res;
+    }
 
     public ArrayList<Integer> maxInWindows(int[] num, int size) {
         ArrayList<Integer> res = new ArrayList<>();

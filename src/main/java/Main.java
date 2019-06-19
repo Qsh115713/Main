@@ -7,9 +7,11 @@ public class Main {
 
 
     public static void main(String[] args) {
-        LeetCode lc = new LeetCode();
+        ForOffer fo = new ForOffer();
+        String res = fo.ReverseSentence2(" ");
+        System.out.println(res.equals(" "));
 
-        Scanner sc = new Scanner(System.in);
+        /*Scanner sc = new Scanner(System.in);
         int m = sc.nextInt();
         int n = sc.nextInt();
         int[] w = new int[n + 1];
@@ -21,7 +23,7 @@ public class Main {
             c[i] = sc.nextInt();
         }
 
-        System.out.println(lc.multiBag(w, v, c, m));
+        System.out.println(lc.multiBag(w, v, c, m));*/
 
         /*TreeNode s = new TreeNode(3);
         s.left = new TreeNode(4);
