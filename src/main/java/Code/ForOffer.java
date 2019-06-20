@@ -6,6 +6,36 @@ import java.util.*;
 
 public class ForOffer {
 
+
+
+    public int LastRemaining_Solution(int n, int m) {
+        if (n == 0) return -1;
+        if (n == 1) return 0;
+        return (LastRemaining_Solution(n - 1, m) + m) % n;
+    }
+
+    public int LastRemaining_Solution2(int n, int m) {
+        if (n <= 0 || m <= 0) return -1;
+        int prev = 0;
+        for (int i = 2; i <= n; i++) {
+            prev = (prev + m) % i;
+        }
+        return prev;
+    }
+
+    public int LastRemaining_Solution3(int n, int m) {
+        LinkedList<Integer> list = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            list.add(i);
+        }
+        int bt = 0;
+        while (list.size() > 1) {
+            bt = (bt + m - 1) % list.size();
+            list.remove(bt);
+        }
+        return list.size() == 1 ? list.get(0) : -1;
+    }
+
     public boolean isContinuous2(int[] numbers) {
         if (numbers == null || numbers.length == 0) return false;
         Arrays.sort(numbers);
@@ -181,15 +211,6 @@ public class ForOffer {
         int res = n;
         boolean b = res != 0 && (res += Sum_Solution(n - 1)) != 0;
         return res;
-    }
-
-    public int LastRemaining_Solution(int n, int m) {
-        if (n < 0 || m < 0) return -1;
-        int prev = 0;
-        for (int i = 2; i <= n; i++) {
-            prev = (prev + m) % i;
-        }
-        return prev;
     }
 
     public boolean isContinuous(int[] numbers) {

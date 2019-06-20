@@ -8,8 +8,7 @@ public class Main {
 
     public static void main(String[] args) {
         ForOffer fo = new ForOffer();
-        String res = fo.ReverseSentence2(" ");
-        System.out.println(res.equals(" "));
+        System.out.println(5 ^ 6);
 
         /*Scanner sc = new Scanner(System.in);
         int m = sc.nextInt();
