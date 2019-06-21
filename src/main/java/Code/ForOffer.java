@@ -6,7 +6,241 @@ import java.util.*;
 
 public class ForOffer {
 
+    TreeNode KthNode(TreeNode pRoot, int k) {
+        Stack<TreeNode> s = new Stack<>();
+        TreeNode p = pRoot;
+        while (p != null || !s.empty()) {
+            while (p != null) {
+                s.push(p);
+                p = p.left;
+            }
+            p = s.pop();
+            if (--k == 0) return p;
+            if (k < 0) break;
+            p = p.right;
+        }
+        return null;
+    }
 
+    String Serialize(TreeNode root) {
+        StringBuilder sb = new StringBuilder();
+        if (root == null) {
+            sb.append("#,");
+            return sb.toString();
+        }
+        sb.append(root.val + ",");
+        sb.append(Serialize(root.left));
+        sb.append(Serialize(root.right));
+        return sb.toString();
+    }
+
+    int index = -1;
+
+    TreeNode Deserialize(String str) {
+        ++index;
+        String[] strs = str.split(",");
+        TreeNode root = null;
+        if (!strs[index].equals("#")) {
+            root = new TreeNode(Integer.valueOf(strs[index]));
+            root.left = Deserialize(str);
+            root.right = Deserialize(str);
+        }
+        return root;
+    }
+
+    public ArrayList<ArrayList<Integer>> Print2(TreeNode pRoot) {
+        ArrayList<ArrayList<Integer>> res = new ArrayList<>();
+        if (pRoot == null) {
+            return res;
+        }
+        ArrayList<Integer> list = new ArrayList<>();
+        LinkedList<TreeNode> queue = new LinkedList<>();
+        queue.addLast(null);//层分隔符
+        queue.addLast(pRoot);
+        boolean leftToRight = true;
+
+        while (queue.size() != 1) {
+            TreeNode node = queue.removeFirst();
+            if (node == null) {//到达层分隔符
+                Iterator<TreeNode> iter = null;
+                if (leftToRight) {
+                    iter = queue.iterator();//从前往后遍历
+                } else {
+                    iter = queue.descendingIterator();//从后往前遍历
+                }
+                leftToRight = !leftToRight;
+                while (iter.hasNext()) {
+                    TreeNode temp = (TreeNode) iter.next();
+                    list.add(temp.val);
+                }
+                res.add(new ArrayList<Integer>(list));
+                list.clear();
+                queue.addLast(null);//添加层分隔符
+                continue;//一定要continue
+            }
+            if (node.left != null) {
+                queue.addLast(node.left);
+            }
+            if (node.right != null) {
+                queue.addLast(node.right);
+            }
+        }
+
+        return res;
+    }
+
+    public ArrayList<ArrayList<Integer>> Print(TreeNode pRoot) {
+        ArrayList<ArrayList<Integer>> res = new ArrayList<>();
+        PrintHelper(res, pRoot, 0);
+        return res;
+    }
+
+    private void PrintHelper(ArrayList<ArrayList<Integer>> res, TreeNode pRoot, int depth) {
+        if (pRoot == null) return;
+        if (depth >= res.size()) {
+            res.add(new ArrayList<>());
+        }
+        PrintHelper(res, pRoot.left, depth + 1);
+        PrintHelper(res, pRoot.right, depth + 1);
+        if (depth % 2 == 1) {
+            res.get(depth).add(0, pRoot.val);
+        } else {
+            res.get(depth).add(pRoot.val);
+        }
+    }
+
+    boolean isSymmetrical(TreeNode pRoot) {
+        return pRoot == null || isSymmetricalHelper(pRoot.left, pRoot.right);
+    }
+
+    boolean isSymmetricalHelper(TreeNode pLeft, TreeNode pRight) {
+        if (pLeft == null && pRight == null) return true;
+        if (pLeft == null || pRight == null) return false;
+        return pLeft.val == pRight.val && isSymmetricalHelper(pLeft.left, pRight.right)
+                && isSymmetricalHelper(pLeft.right, pRight.left);
+    }
+
+    public TreeLinkNode GetNext(TreeLinkNode pNode) {
+        if (pNode == null) return null;
+        if (pNode.right != null) {
+            pNode = pNode.right;
+            while (pNode.left != null) {
+                pNode = pNode.left;
+            }
+            return pNode;
+        }
+        while (pNode.next != null && pNode.next.right == pNode) {
+            pNode = pNode.next;
+        }
+        return pNode.next;
+    }
+
+    public ListNode deleteDuplication(ListNode pHead) {
+        ListNode pRoot = new ListNode(0), pNode = pRoot, ptr;
+        pRoot.next = pHead;
+        while (pNode.next != null && pNode.next.next != null) {
+            ptr = pNode.next;
+            if (pNode.next.val != ptr.next.val) {
+                pNode = pNode.next;
+                continue;
+            }
+            while (ptr.next != null) {
+                if (ptr.next.val != pNode.next.val) {
+                    break;
+                }
+                ptr = ptr.next;
+            }
+            pNode.next = ptr.next;
+        }
+        return pRoot.next;
+    }
+
+    public ListNode EntryNodeOfLoop2(ListNode pHead) {
+        ListNode fast = pHead;
+        ListNode slow = pHead;
+        while (fast != null && fast.next != null) {
+            fast = fast.next.next;
+            slow = slow.next;
+            if (fast == slow) break;
+        }
+        if (fast == null || fast.next == null) return null;
+        fast = pHead;
+        while (fast != slow) {
+            fast = fast.next;
+            slow = slow.next;
+        }
+        return fast;
+    }
+
+    Set<Character> occurMore = new HashSet<>();
+    Queue<Character> occurOne = new ArrayDeque<>();
+
+    //Insert one char from stringstream
+    public void Insert(char ch) {
+        if (!occurMore.contains(ch)) {
+            if (occurOne.contains(ch)) {
+                occurOne.remove(ch);
+                occurMore.add(ch);
+            } else {
+                occurOne.add(ch);
+            }
+        }
+    }
+
+    //return the first appearence once char in current stringstream
+    public char FirstAppearingOnce() {
+        if (occurOne.isEmpty()) {
+            return '#';
+        } else {
+            return occurOne.peek();
+        }
+    }
+
+    public boolean match(char[] str, char[] pattern) {
+        int m = str.length, n = pattern.length;
+        boolean[][] dp = new boolean[m + 1][n + 1];
+        dp[0][0] = true;
+        for (int j = 2; j <= n; j += 2) {
+            if (pattern[j - 1] == '*') {
+                dp[0][j] = true;
+            }
+        }
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (pattern[j - 1] == '*') {
+                    dp[i][j] = j > 1 && (dp[i][j - 2] || (pattern[j - 2] == '.' || pattern[j - 2] == str[i - 1]) && dp[i - 1][j]);
+                } else {
+                    dp[i][j] = dp[i - 1][j - 1] && (pattern[j - 1] == '.' || pattern[j - 1] == str[i - 1]);
+                }
+            }
+        }
+        return dp[m][n];
+    }
+
+    public int[] multiply2(int[] A) {
+        if (A == null) return A;
+        int[] res = new int[A.length];
+        int count = 1;
+        //from head to tail
+        for (int i = 0; i < res.length; i++) {
+            res[i] = count;
+            count *= A[i];
+        }
+        count = 1;
+        //from tail to head
+        for (int i = res.length - 1; i >= 0; i--) {
+            res[i] *= count;
+            count *= A[i];
+        }
+        return res;
+    }
+
+
+    public int Sum_Solution2(int n) {
+        int res = n;
+        boolean tag = res != 0 && (res += Sum_Solution2(n - 1)) != 0;
+        return res;
+    }
 
     public int LastRemaining_Solution(int n, int m) {
         if (n == 0) return -1;

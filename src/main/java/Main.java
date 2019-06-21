@@ -1,4 +1,5 @@
 import Code.*;
+import Data.*;
 
 import java.util.*;
 
@@ -8,7 +9,6 @@ public class Main {
 
     public static void main(String[] args) {
         ForOffer fo = new ForOffer();
-        System.out.println(5 ^ 6);
 
         /*Scanner sc = new Scanner(System.in);
         int m = sc.nextInt();
