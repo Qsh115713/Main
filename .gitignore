@@ -1,6 +1,8 @@
 ##ignore this file##
-/target/ 
+/target/
+/out/
 /.idea/
-  
+
+Main.java
 *.class
 *.iml
