@@ -4,6 +4,82 @@ import java.util.*;
 
 public class Solution {
 
+    public int maxPathSum(TreeNode root) {
+        if (root == null) return 0;
+        maxPathSumLoop(root);
+        return maxVal;
+    }
+
+    private int maxVal = Integer.MIN_VALUE;
+
+    private int maxPathSumLoop(TreeNode root) {
+        if (root == null) return 0;
+        int left = Math.max(maxPathSumLoop(root.left), 0);
+        int right = Math.max(maxPathSumLoop(root.right), 0);
+        maxVal = Math.max(maxVal, root.val + left + right);
+        return root.val + Math.max(left, right);
+    }
+
+    public void flatten(TreeNode root) {
+        TreeNode cur = root;
+        while (cur != null) {
+            if (cur.left != null) {
+                TreeNode pre = cur.left;
+                while (pre.right != null) {
+                    pre = pre.right;
+                }
+                pre.right = cur.right;
+                cur.right = cur.left;
+                cur.left = null;
+            }
+            cur = cur.right;
+        }
+    }
+
+    public int minDepth(TreeNode root) {
+        if (root == null) return 0;
+        if (root.left == null && root.right == null) return 1;
+        int left = minDepth(root.left);
+        int right = minDepth(root.right);
+        return Math.min(left == 0 ? Integer.MAX_VALUE : left, right == 0 ? Integer.MAX_VALUE : right) + 1;
+    }
+
+    public boolean isBalanced(TreeNode root) {
+        return getHeight(root) != -1;
+    }
+
+    private int getHeight(TreeNode root) {
+        if (root == null) return 0;
+        int leftHeight = getHeight(root.left);
+        if (leftHeight == -1) return -1;
+        int rightHeight = getHeight(root.right);
+        if (rightHeight == -1) return -1;
+        if (Math.abs(leftHeight - rightHeight) > 1) return -1;
+        return Math.max(leftHeight, rightHeight) + 1;
+    }
+
+    public TreeNode sortedArrayToBST(int[] nums) {
+        return sortedArrayToBSTLoop(nums, 0, nums.length - 1);
+    }
+
+    private TreeNode sortedArrayToBSTLoop(int[] nums, int lo, int hi) {
+        if (lo > hi) return null;
+        int mid = lo + (hi - lo) / 2;
+        TreeNode root = new TreeNode(nums[mid]);
+        root.left = sortedArrayToBSTLoop(nums, lo, mid - 1);
+        root.right = sortedArrayToBSTLoop(nums, mid + 1, hi);
+        return root;
+    }
+
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null || root == p || root == q) return root;
+        TreeNode left = lowestCommonAncestor(root.left, p, q);
+        TreeNode right = lowestCommonAncestor(root.right, p, q);
+        if (left == null) return right;
+        if (right == null) return left;
+        return root;
+    }
+
     public void recoverTree(TreeNode root) {
         Stack<TreeNode> s = new Stack<>();
         TreeNode p = root, prev = null, tmp = null;
