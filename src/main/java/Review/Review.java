@@ -3,7 +3,6 @@ package Review;
 import Data.*;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Review {
 
@@ -99,6 +98,24 @@ public class Review {
         root.left = sortedArrayToBSTHelper(nums, lo, mid - 1);
         root.right = sortedArrayToBSTHelper(nums, mid + 1, hi);
         return root;
+    }
+
+    public List<List<Integer>> levelOrder3(TreeNode root) {
+        List<List<Integer>> res = new ArrayList<>();
+        if (root == null) return res;
+        Queue<TreeNode> q = new ArrayDeque<>();
+        q.add(root);
+        while (!q.isEmpty()) {
+            res.add(new ArrayList<>());
+            int len = q.size();
+            while (len-- > 0) {
+                TreeNode tmp = q.poll();
+                if (tmp.left != null) q.add(tmp.left);
+                if (tmp.right != null) q.add(tmp.right);
+                res.get(res.size() - 1).add(tmp.val);
+            }
+        }
+        return res;
     }
 
     public List<List<Integer>> levelOrder2(TreeNode root) {
